@@ -1,0 +1,14 @@
+{
+  "name": "notitg-external",
+  "version": "1.0.2",
+  "description": "A way to read NotITG's external bytes and write to the address.",
+  "main": "notitg.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Vinyla Jaezmien Gael",
+  "license": "ISC",
+  "dependencies": {
+    "memoryjs": "^3.2.1"
+  }
+}
