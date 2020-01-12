@@ -1,6 +1,6 @@
 {
   "name": "notitg-external",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A way to read NotITG's external bytes and write to the address.",
   "main": "notitg.js",
   "scripts": {
