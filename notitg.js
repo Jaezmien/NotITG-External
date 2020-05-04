@@ -170,7 +170,7 @@ class NotITG {
 
 }
 
-module.exports.Scan = function(knownFileName = false) {
+module.exports.Scan = function(knownFileName = true) {
 
     // Default file name (simple detection)
     if(knownFileName) {
