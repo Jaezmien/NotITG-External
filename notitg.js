@@ -84,19 +84,26 @@ const NotITG_Versions = {
         "BuildDate": 20180827,
     },
     "V4": {
-        "BuldAddress": 0x006E0E60,
+        "BuildAddress": 0x006E0E60,
         "Address": 0x008BA388,
         "BuildDate": 20200112,
+    },
+    "V4.0.1": {
+        "BuildAddress": 0x006C5E40,
+        "Address": 0x00897D10,
+        "BuildDate": 20200126,
     }
 
 }
 const NotITG_Files = {
     // These are the default filenames.
 
-    "V1"  : "NotITG.exe",         // V1
-    "V2"  : "NotITG-170405.exe",  // V2
-    "V3"  : "NotITG-V3.exe",      // V3
-    "V3.1": "NotITG-V3.1.exe",    // V3.1
+    "V1"    : "NotITG.exe",         // V1
+    "V2"    : "NotITG-170405.exe",  // V2
+    "V3"    : "NotITG-V3.exe",      // V3
+    "V3.1"  : "NotITG-V3.1.exe",    // V3.1
+    "V4"    : "NotITG-V4.exe",      // V4
+    "V4.0.1": "NotITG-V4.0.1.exe",  // V4.0.1
 }
 
 class NotITG {
@@ -163,111 +170,41 @@ class NotITG {
 
 }
 
-
-
-
-function _SCANSIMPLE() {
-    let result = null
-
-    memoryjs.getProcesses((error, processes) => {
-        if(error !== null) {
-
-            for(var process in processes) {
-                for(var key in NotITG_Files) {
-
-                    if(NotITG_Files[key] === processes[process].szExeFile) {
-    
-                        result = {"version": key, "process": processes[process]}
-                        return
-
-                    }
-    
-                }
-            } 
-
-        }
-    })
-
-    return result
-}
-function _SCANMED(fileName) {
-    let result = null
-
-    memoryjs.getProcesses((error, processes) => {
-        if(error !== null) {
-
-            for(var process in processes) {
-                if(fileName === processes[process].szExeFile) {
-                    result = processes[process]
-                    return
-
-                }
-            } 
-
-        }
-    })
-
-    return result
-}
-
-module.exports.Scan = function(fileName) {
+module.exports.Scan = function(knownFileName = false) {
 
     // Default file name (simple detection)
-    if(fileName === undefined) {
+    if(knownFileName) {
 
-        let res = _SCANSIMPLE()
-
-        if( res === null ) {
-            throw new Error("Cannot find application!")
-        } else {
-            return new NotITG(res.version, memoryjs.openProcess(res.process.th32ProcessID))
-        }
+        memoryjs.getProcesses( (error,processes) => {
+            if(error === null) {
+                for(var process in processes) {
+                    Object.keys(NotITG_Files).forEach(key => {
+                        if(NotITG_Files[key] === processes[process].szExeFile) {
+                            return new NotITG(key, memoryjs.openProcess(process.th32ProcessID))
+                        }  
+                    })
+                }
+            }
+        } )
 
     }
-
-    // Custom file name (harder detection)
+    // Unknown file name
     else {
 
-        // Build not defined
-        if(typeof fileName == "string") {
-
-            if (!fileName.endsWith('.exe')) {
-                fileName += '.exe'
-            }
-            let res = _SCANMED(fileName);
-            if( res === null ) {
-                throw new Error("Cannot find application!")
-            } else {
-                let proc = memoryjs.openProcess(res.th32ProcessID);
-                let ver = "";
-                // Detect build number
-                for(var key in NotITG_Versions) {
-                    console.log(key, memoryjs.readMemory(process.handle, NotITG_Versions[key].BuildAddress, memoryjs.INT))
-                    if (memoryjs.readMemory(process.handle, NotITG_Versions[key].BuildAddress, memoryjs.INT) == NotITG_Versions[key].BuildDate) {
-
-                        ver = key;
-                        break
-
-                    }
-
+        memoryjs.getProcesses( (error,processes) => {
+            if(error === null) {
+                for(var process in processes) {
+                    Object.keys(NotITG_Versions).forEach(key => {
+                        let value = NotITG_Versions[key]
+                        if (memoryjs.readMemory(process.handle, value.BuildAddress, memoryjs.INT) == value.BuildDate) {
+                            return new NotITG(key, memoryjs.openProcess(process.th32ProcessID))
+                        }
+                    })
                 }
-                console.log(ver)
-
-                return new NotITG(ver, memoryjs.openProcess(res.th32ProcessID))
             }
+        } )
 
-        }
+    }
 
-    }
-}
-module.exports.ScanConfident = function(fileName,BuildVer) {
-    if (!fileName.endsWith('.exe')) {
-        fileName += '.exe'
-    }
-    let res = _SCANMED(fileName);
-    if( res === null ) {
-        throw new Error("Cannot find application!")
-    } else {
-        return new NotITG(BuildVer, memoryjs.openProcess(res.th32ProcessID))
-    }
+    throw new Error("Cannot find application!")
 }
