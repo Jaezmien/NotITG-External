@@ -1,6 +1,4 @@
 # NotITG-External
-why?
-im too lazy to set up a websocket server on C# :P
 -----------
 ### Setup
 ```javascript
