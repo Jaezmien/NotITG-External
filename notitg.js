@@ -123,9 +123,6 @@ class NotITG {
                 if( !(index >= 0 && index <= 9) ) {
                     throw new Error("Index should be 0-9! Got " + index)
                 }
-                if( !(flag >= 0 && flag <= 9) ) {
-                    throw new Error("Flag should be 0-9! Got " + flag)
-                }
                 //
                 memoryjs.writeMemory(process.handle, this.details.Address + (index * 4), flag, memoryjs.INT)
             }
@@ -146,9 +143,6 @@ class NotITG {
                 // Errors
                 if( !(index >= 0 && index <= 63) ) {
                     throw new Error("Index should be 0-63! Got " + index)
-                }
-                if( !(flag >= -2,147,483,648 && flag <= 2,147,483,647) ) {
-                    throw new Error("Flag should be around the 4 bytes limit! Got " + flag)
                 }
                 //
                 memoryjs.writeMemory(this.process.handle, this.details.Address + (index * 4), flag, memoryjs.INT)

@@ -16,7 +16,6 @@ Furthermore, this function will only get the first process it detects.
 ### Functions
 ##### .SetExternal(int index, int flag)
 Index is limited to 0-9 for NotITG V1-V2, 0-63 for V3+.
-Flag is limited to 0-9 for NotITG V1-V2 and the 4 bytes limit for V3+.
 
 ##### .GetExternal(int index)
 See: SetExternal
